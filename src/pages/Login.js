@@ -5,12 +5,15 @@ import { saveToken } from "../utils/auth";
 import { saveRole } from "../utils/role";
 import { savePermissions } from "../utils/permissions";
 import { saveUser } from "../utils/user";
+import eyeOpenIcon from "../assets/icons/eye-open.svg";
+import eyeCloseIcon from "../assets/icons/eye-close.svg";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -32,6 +35,10 @@ const Login = () => {
       setLoading(false);
       setError("Login failed. Please check your credentials.");
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
   };
 
   return (
@@ -62,22 +69,35 @@ const Login = () => {
             />
           </div>
 
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <label
               htmlFor="password"
               className="block text-gray-700 font-medium mb-2"
             >
               Password
             </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"
-              placeholder="Enter your password"
-              required
-            />
+            <div className="relative">
+              <input
+                type={passwordVisible ? "text" : "password"}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-4 pr-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"
+                placeholder="Enter your password"
+                required
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2"
+              >
+                <img
+                  src={passwordVisible ? eyeOpenIcon : eyeCloseIcon}
+                  alt="Toggle Password Visibility"
+                  className="w-6 h-6"
+                />
+              </button>
+            </div>
           </div>
 
           <button

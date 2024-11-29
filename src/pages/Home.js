@@ -7,6 +7,7 @@ import { getPermissions, clearPermissions } from "../utils/permissions";
 import StaffDetails from "../components/StaffDetails";
 import detailIcon from "../assets/icons/detail.svg";
 import logoutIcon from "../assets/icons/logout.svg";
+import Loading from "../components/Loading";
 
 const Home = () => {
   const [user, setUser] = useState(null);
@@ -14,6 +15,7 @@ const Home = () => {
   const [permissions, setPermissions] = useState([]);
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingDetails, setLoadingDetails] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -55,6 +57,7 @@ const Home = () => {
   }, [user, role]);
 
   const showStaffDetails = async (staffMember) => {
+    setLoadingDetails(true);
     try {
       const token = localStorage.getItem("token");
 
@@ -76,6 +79,8 @@ const Home = () => {
       setIsModalOpen(true);
     } catch (err) {
       console.error("Error fetching staff details:", err);
+    } finally {
+      setLoadingDetails(false);
     }
   };
 
@@ -92,7 +97,7 @@ const Home = () => {
     window.location.href = "/";
   };
 
-  if (loading) return <div className="text-center py-12">Loading...</div>;
+  if (loading) return <Loading />; // Use Loading component for initial load
   if (!user || !role) return <div>Loading user data...</div>;
 
   return (
@@ -108,7 +113,7 @@ const Home = () => {
           <img src={logoutIcon} alt="Logout" className="w-6 h-6" />
         </button>
       </div>
-
+      {loadingDetails && <Loading />} {/* Show Loading when fetching details */}
       <div className="flex flex-col sm:flex-row justify-center items-start space-y-8 sm:space-y-0 sm:space-x-8 w-full">
         <div className="w-full sm:max-w-md bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="p-8">
@@ -217,7 +222,7 @@ const Home = () => {
                 <tbody>
                   {staff.map((staffMember, index) => (
                     <tr
-                      key={staffMember._id}
+                      key={index}
                       className={`${
                         index % 2 === 0 ? "bg-indigo-50" : "bg-white"
                       } hover:bg-indigo-100 transition-colors duration-300`}
@@ -261,7 +266,6 @@ const Home = () => {
           )}
         </div>
       </div>
-
       <StaffDetails
         isOpen={isModalOpen}
         staff={selectedStaff}
